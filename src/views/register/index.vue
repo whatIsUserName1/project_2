@@ -1,14 +1,15 @@
 <template>
-  <div>
-    <router-view></router-view>
+<div>
+<h1>register.vue</h1>
 </div>
 </template>
 
 <script>
 export default {
+
 }
 </script>
 
-<style lang="less" scoped>
+<style>
 
 </style>
