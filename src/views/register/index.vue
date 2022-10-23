@@ -6,15 +6,15 @@
       <!-- 标题的盒子 -->
       <div class="title-box"></div>
       <!-- 注册的表单区域 -->
-      <el-form ref="form" :model="form">
-        <el-form-item>
+      <el-form ref="form" :model="form" :rules="regRules">
+        <el-form-item prop="username">
           <el-input v-model="form.username" placeholder="请输入用户名"></el-input>
         </el-form-item>
-        <el-form-item>
-          <el-input v-model="form.password" placeholder="请输入用户名"></el-input>
+        <el-form-item prop="password">
+          <el-input type="password" v-model="form.password" placeholder="请输入密码"></el-input>
         </el-form-item>
-        <el-form-item>
-          <el-input v-model="form.repassword" placeholder="请输入用户名"></el-input>
+        <el-form-item prop="repassword">
+          <el-input type="password" v-model="form.repassword" placeholder="请确认密码"></el-input>
         </el-form-item>
         <el-form-item>
           <el-button type="primary" @click="registerFn" class="btn-reg">注册</el-button>
@@ -27,12 +27,52 @@
 
 <script>
 export default {
+  name: 'my-register',
   data() {
+    const samePwdFn = (rule, value, callback) => {
+      if (value !== this.form.password) {
+        callback(new Error('两次输入密码不一致!'))
+      } else if (value === '') {
+        callback(new Error('请再次输入密码'))
+      } else {
+        // 如果验证成功  直接调用 callback回调函数
+        callback()
+      }
+    }
     return {
       form: {
-        username: '用户名',
-        password: '密码',
-        repassword: '确认密码'
+        username: '',
+        password: '',
+        repassword: ''
+      },
+      regRules: { // 表单规则校验对象
+        username: [
+          { required: true, message: '请输入用户名', trigger: 'blur' },
+          {
+            pattern: /^[a-zA-Z0-9]{1,10}$/,
+            message: '用户名必须是1-10的大小写字母数字',
+            trigger: 'blur'
+          }
+        ],
+        password: [
+          { required: true, message: '请输入密码', trigger: 'blur' },
+          {
+            pattern: /^\S{6,15}$/,
+            message: '密码必须是6-15的非空字符',
+            trigger: 'blur'
+          }
+        ],
+        repassword: [
+          { required: true, message: '请输入正确密码', trigger: 'blur' },
+          {
+            validator: samePwdFn, trigger: 'blur'
+          },
+          {
+            pattern: /^\S{6,15}$/,
+            message: '密码必须是6-15的非空字符',
+            trigger: 'blur'
+          }
+        ]
       }
     }
   },
