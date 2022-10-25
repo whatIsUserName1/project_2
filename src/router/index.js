@@ -4,7 +4,7 @@ import VueRouter from 'vue-router'
 Vue.use(VueRouter)
 
 const routes = [
-  { path: '/', redirect: '/login' },
+  { path: '/', component: () => import('@/views/layout') },
   {
     path: '/reg', component: () => import('@/views/register/index.vue')
     // webpack提供import函数来路由懒加载导入

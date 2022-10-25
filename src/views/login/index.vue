@@ -57,6 +57,8 @@ export default {
           const { data: res } = await loginAPI(this.Loginform)
           if (res.code === 0) {
             this.$message.success(res.message)
+            this.$store.commit('updataToken', res.token)
+            console.log(res)
           } else {
             this.$message.error(res.message)
           }
