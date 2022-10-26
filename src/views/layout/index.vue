@@ -23,7 +23,11 @@
     <el-container>
       <!-- 左侧边栏的用户信息 -->
       <el-aside width="200px">
-        Aside
+        <div class="user-box">
+          <img :src="user_pic" alt="" v-if="user_pic" />
+          <img src="../../assets/images/logo.png" alt="" v-else>
+          <span>欢迎{{ username | nickname }}</span>
+        </div>
       </el-aside>
       <el-container>
         <!-- 页面主体区域 -->
@@ -32,13 +36,14 @@
           <router-view></router-view>
         </el-main>
         <!-- 底部 footer 区域 -->
-        <el-footer>© www.itheima.com - 黑马程序员</el-footer>
+        <el-footer>www.wangchunlong.com</el-footer>
       </el-container>
     </el-container>
   </el-container>
 </template>
 
 <script>
+import { mapGetters } from 'vuex'
 // 总结: 在组件标签上绑定的所有事件(包括原生事件的名字 click,input等等)都是自定义事件 需要组件内$emit来触发才可以
 // 万一组件内不支持这个远摄关事件名字  解决: @事件名.native="methods里的方法名"
 // .native给组件内根标签 绑定这个原生的事件
@@ -56,12 +61,16 @@ export default {
         // 选择了退出
         // 清除 vuex
         this.$store.commit('updataToken', '')
+        this.$store.commit('updataUserInfo', {})
         // 强制跳转登录页面
         this.$router.push('/login')
       }).catch(() => {
         // 选择了取消
       })
     }
+  },
+  computed: {
+    ...mapGetters(['username', 'nickname', 'user_pic'])
   }
 }
 </script>
