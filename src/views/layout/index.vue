@@ -26,8 +26,43 @@
         <div class="user-box">
           <img :src="user_pic" alt="" v-if="user_pic" />
           <img src="../../assets/images/logo.png" alt="" v-else>
-          <span>欢迎{{ username | nickname }}</span>
+          <span>欢迎{{ nickname || username }}</span>
         </div>
+        <!-- 左侧导航栏区域 -->
+        <!-- default-active: 当前激活的index(el-submenu/el-menu-item的index值)，对应菜单就有激活样式
+        @open:sub-menu 展开的回调
+      @close:sub-menu 关闭的回调
+    active-text-color:激活时的文字颜色 哪项index的值和default-active一致，就会被设置动态文字的颜色 -->
+        <el-menu unique-opened default-active="/home" class="el-menu-vertical-demo" @open="handleOpen"
+          @close="handleClose" background-color="#23262E" text-color="#fff" active-text-color="#409EFF">
+          <!-- 首页 -->
+          <el-menu-item index="/home">
+            <i class="el-icon-s-home"></i>
+            <span slot="title">首页</span>
+          </el-menu-item>
+          <!-- 文章管理  -->
+          <el-submenu index="topic">
+            <template slot="title">
+              <i class="el-icon-s-order"></i>
+              <span>文章管理</span>
+            </template>
+            <el-menu-item-group>
+              <el-menu-item index="topic1">文章分类</el-menu-item>
+              <el-menu-item index="topic2">文章列表</el-menu-item>
+            </el-menu-item-group>
+          </el-submenu>
+          <!-- 个人中心  -->
+          <el-submenu index="user">
+            <template slot="title">
+              <i class="el-icon-s-order"></i>
+              <span>个人中心</span>
+            </template>
+            <el-menu-item-group>
+              <el-menu-item index="user1">个人信息1</el-menu-item>
+              <el-menu-item index="user2">个人信息2</el-menu-item>
+            </el-menu-item-group>
+          </el-submenu>
+        </el-menu>
       </el-aside>
       <el-container>
         <!-- 页面主体区域 -->
@@ -67,6 +102,13 @@ export default {
       }).catch(() => {
         // 选择了取消
       })
+    },
+    // 左侧菜单点击事件
+    handleOpen(key, keyPath) {
+      console.log(key, keyPath)
+    },
+    handleClose(key, keyPath) {
+      console.log(key, keyPath)
     }
   },
   computed: {

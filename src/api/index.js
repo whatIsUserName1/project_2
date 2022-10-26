@@ -2,7 +2,7 @@ import store from '@/store'
 import request from '@/utils/request.js'
 
 /**
- *
+ * 注册页面的提交请求
  * @param {*} param0 { username:用户名, password:密码, repassword:确认密码}
  * @returns promise
  */
@@ -35,6 +35,7 @@ export const loginAPI = ({ username, password }) => {
   })
 }
 
+// 获取用户信息
 export const getUserInfoAPI = () => {
   return request({
     url: '/my/userinfo',
