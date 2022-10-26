@@ -33,35 +33,29 @@
         @open:sub-menu 展开的回调
       @close:sub-menu 关闭的回调
     active-text-color:激活时的文字颜色 哪项index的值和default-active一致，就会被设置动态文字的颜色 -->
-        <el-menu unique-opened default-active="/home" class="el-menu-vertical-demo" @open="handleOpen"
+        <el-menu unique-opened default-active="/home" router class="el-menu-vertical-demo" @open="handleOpen"
           @close="handleClose" background-color="#23262E" text-color="#fff" active-text-color="#409EFF">
-          <!-- 首页 -->
-          <el-menu-item index="/home">
-            <i class="el-icon-s-home"></i>
-            <span slot="title">首页</span>
-          </el-menu-item>
-          <!-- 文章管理  -->
-          <el-submenu index="topic">
-            <template slot="title">
-              <i class="el-icon-s-order"></i>
-              <span>文章管理</span>
-            </template>
-            <el-menu-item-group>
-              <el-menu-item index="topic1">文章分类</el-menu-item>
-              <el-menu-item index="topic2">文章列表</el-menu-item>
-            </el-menu-item-group>
-          </el-submenu>
-          <!-- 个人中心  -->
-          <el-submenu index="user">
-            <template slot="title">
-              <i class="el-icon-s-order"></i>
-              <span>个人中心</span>
-            </template>
-            <el-menu-item-group>
-              <el-menu-item index="user1">个人信息1</el-menu-item>
-              <el-menu-item index="user2">个人信息2</el-menu-item>
-            </el-menu-item-group>
-          </el-submenu>
+          <template v-for="item, index in list.data">
+            <!-- 首页 -->
+            <el-menu-item :index="item.indexPath" v-if="!item.children" :key="item.indexPath">
+              <i :class="item.icon"></i>
+              <span slot="title">{{ item.title }}</span>
+            </el-menu-item>
+            <!-- 文章管理  -->
+            <el-submenu v-else :index="item.indexPath" :key="index">
+              <template slot="title">
+                <i :class="item.icon"></i>
+                <span>{{ item.title }}</span>
+              </template>
+              <el-menu-item-group v-for="obj in item.children" :key="obj.indexPath">
+                <el-menu-item :index="obj.indexPath">
+                  <i :class="obj.icon"></i>
+                  <span>{{ obj.title }}</span>
+                </el-menu-item>
+              </el-menu-item-group>
+            </el-submenu>
+            <!-- 个人中心  -->
+          </template>
         </el-menu>
       </el-aside>
       <el-container>
@@ -79,11 +73,17 @@
 
 <script>
 import { mapGetters } from 'vuex'
+import { getMenysListAPI } from '@/api'
 // 总结: 在组件标签上绑定的所有事件(包括原生事件的名字 click,input等等)都是自定义事件 需要组件内$emit来触发才可以
 // 万一组件内不支持这个远摄关事件名字  解决: @事件名.native="methods里的方法名"
 // .native给组件内根标签 绑定这个原生的事件
 export default {
   name: 'my-layout',
+  data() {
+    return {
+      list: {}
+    }
+  },
   // 退出登录 ->点击事件
   methods: {
     logoutFn() {
@@ -105,14 +105,24 @@ export default {
     },
     // 左侧菜单点击事件
     handleOpen(key, keyPath) {
-      console.log(key, keyPath)
+      // console.log(key, keyPath)
     },
     handleClose(key, keyPath) {
-      console.log(key, keyPath)
+      // console.log(key, keyPath)
+    },
+    // 获取右侧侧边栏数据
+    async getMenysList() {
+      const { data: menus } = await getMenysListAPI()
+      // console.log(menus)
+      this.list = menus
+      console.log(this.list)
     }
   },
   computed: {
     ...mapGetters(['username', 'nickname', 'user_pic'])
+  },
+  created() {
+    this.getMenysList()
   }
 }
 </script>

@@ -20,18 +20,35 @@ const router = new VueRouter({
   routes
 })
 
+const whiteList = ['/login', '/reg']
 // 退出登录，重新登录，只走相关组件代码 相当于(异步dom切换 不会导致所有代码重新执行  app.vue不走)
 // 效果不对：你换个账号得要重新请求用户数据
 // 解决：
 // 可以在登录页面 登录成功后再发起请求拿到用户信息
 // 2.在全局前置路由守卫中 写路由跳转的时候 判断+获取
 // 全局前置路由守卫
+// 知识点1: 浏览器第一次打开项目页面会触发一次 全局路由守卫函数
+// 知识点2: 判断登录与否:有token就证明登录了 没有token就没有登录
+// 知识点3:next()如果强制切换路由地址 会再次走路由守卫再次去匹配路由表
 router.beforeEach((to, from, next) => {
   const token = store.state.token
-  if (token && !store.state.UserInfo.username) {
-    // 你现在本地有token值 才回去请求用户信息
-    store.dispatch('getUserInfoActions')
+  if (token) {
+    // 登录了
+    if (!store.state.UserInfo.username) {
+      // 你现在本地有token值 才回去请求用户信息
+      store.dispatch('getUserInfoActions')
+    }
+    next()
+  } else {
+    // 未登录
+    // 数组.includes(值) 作用 判断值是否在数组中出现过  出现过原地返回true
+    if (whiteList.includes(to.path)) {
+      // 未登录 可以访问的路由地址，则放行(路由全局前置守卫不会再次触发了)，而是匹配路由表，让组件挂载
+      next()
+    } else {
+      // next()强制切换到登录路径上
+      next('/login')
+    }
   }
-  next()
 })
 export default router

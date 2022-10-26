@@ -1,4 +1,3 @@
-import store from '@/store'
 import request from '@/utils/request.js'
 
 /**
@@ -38,13 +37,20 @@ export const loginAPI = ({ username, password }) => {
 // 获取用户信息
 export const getUserInfoAPI = () => {
   return request({
-    url: '/my/userinfo',
+    url: '/my/userinfo'
     // method不写的话 默认就是get方法请求
     // 传参后给后台: params(查询字符串query)
     // data(请求体body),headers(请求头)
-    headers: {
-      // this.$store.state.token这里this不是组件对象不能使用this.$store拿到store对象
-      Authorization: store.state.token
-    }
+    // headers: {
+    //   // this.$store.state.token这里this不是组件对象不能使用this.$store拿到store对象
+    //   Authorization: store.state.token
+    // }
+  })
+}
+
+// 获取侧边栏数据
+export const getMenysListAPI = () => {
+  return request({
+    url: '/my/menus'
   })
 }
