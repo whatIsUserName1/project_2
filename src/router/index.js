@@ -3,6 +3,7 @@ import VueRouter from 'vue-router'
 import store from '@/store'
 import home from '@/views/home'
 import UserInfo from '@/views/user/userInfo.vue'
+import UserAvatar from '@/views/user/userAvatar.vue'
 Vue.use(VueRouter)
 
 const routes = [
@@ -17,6 +18,10 @@ const routes = [
       {
         path: 'user-info',
         component: UserInfo
+      },
+      {
+        path: 'user-avatar',
+        component: UserAvatar
       }
     ],
     redirect: '/home'
