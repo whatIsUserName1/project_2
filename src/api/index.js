@@ -54,3 +54,21 @@ export const getMenysListAPI = () => {
     url: '/my/menus'
   })
 }
+/**
+ * 更新-基本资料
+ * @param {*} param0
+ * @returns
+ */
+export const updataUserInfoAPI = ({ id, username, nickname, email, user_pic }) => {
+  return request({
+    url: '/my/userinfo',
+    method: 'PUT',
+    data: {
+      id,
+      username,
+      nickname,
+      email,
+      user_pic
+    }
+  })
+}

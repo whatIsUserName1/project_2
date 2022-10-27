@@ -1,10 +1,26 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
 import store from '@/store'
+import home from '@/views/home'
+import UserInfo from '@/views/user/userInfo.vue'
 Vue.use(VueRouter)
 
 const routes = [
-  { path: '/', component: () => import('@/views/layout') },
+  {
+    path: '/',
+    component: () => import('@/views/layout'),
+    children: [
+      {
+        path: 'home',
+        component: home
+      },
+      {
+        path: 'user-info',
+        component: UserInfo
+      }
+    ],
+    redirect: '/home'
+  },
   {
     path: '/reg', component: () => import('@/views/register/index.vue')
     // webpack提供import函数来路由懒加载导入

@@ -33,7 +33,7 @@
         @open:sub-menu 展开的回调
       @close:sub-menu 关闭的回调
     active-text-color:激活时的文字颜色 哪项index的值和default-active一致，就会被设置动态文字的颜色 -->
-        <el-menu unique-opened default-active="/home" router class="el-menu-vertical-demo" @open="handleOpen"
+        <el-menu unique-opened :default-active="$route.path" router class="el-menu-vertical-demo" @open="handleOpen"
           @close="handleClose" background-color="#23262E" text-color="#fff" active-text-color="#409EFF">
           <template v-for="item, index in list.data">
             <!-- 首页 -->
