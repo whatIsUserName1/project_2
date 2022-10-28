@@ -72,3 +72,16 @@ export const updataUserInfoAPI = ({ id, username, nickname, email, user_pic }) =
     }
   })
 }
+
+/**
+ *
+ */
+export const updataUserAvatarAPI = (avatar) => {
+  return request({
+    url: '/my/update/avatar',
+    method: 'PATCH',
+    data: {
+      avatar
+    }
+  })
+}

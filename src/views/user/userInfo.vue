@@ -54,7 +54,7 @@ export default {
           // 因为后端更新用户基本资料接口 需要带id过去 this.userForm对象里面本身没有id 就需要我们手动添加一个
           this.userForm.id = this.$store.state.UserInfo.id
           const { data: res } = await updataUserInfoAPI(this.userForm)
-          // console.log(res)
+          console.log(res)
           if (res.code !== 0) return this.$message.error('更新用户信息失败')
           // 更新用户信息成功 刷新 Vuex中的数据
           this.$message.success('更新成功!')
