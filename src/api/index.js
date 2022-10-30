@@ -74,7 +74,7 @@ export const updataUserInfoAPI = ({ id, username, nickname, email, user_pic }) =
 }
 
 /**
- *
+ *  修改头像
  */
 export const updataUserAvatarAPI = (avatar) => {
   return request({
@@ -82,6 +82,62 @@ export const updataUserAvatarAPI = (avatar) => {
     method: 'PATCH',
     data: {
       avatar
+    }
+  })
+}
+/**
+ *跟新用户密码 返回的是一个 promise对象
+ */
+export const updataPwdAPI = ({ old_pwd, new_pwd, re_pwd }) => {
+  return request({
+    url: '/my/updatepwd',
+    method: 'PATCH',
+    data: {
+      old_pwd,
+      new_pwd,
+      re_pwd
+    }
+  })
+}
+
+/**
+ * 获取文章分类
+ * @returns promise对象
+ */
+export const getArtCateListAPI = () => {
+  return request({
+    url: '/my/cate/list'
+  })
+}
+
+/**
+ * 增加-文章分类
+ * @param{*}param0{cate_name:分类名,cate_alias:分类别名}
+ * @returns promise对象
+ */
+export const saveArtCateAPI = ({ cate_name, cate_alias }) => {
+  return request({
+    url: '/my/cate/add',
+    method: 'POST',
+    data: {
+      cate_name,
+      cate_alias
+    }
+  })
+}
+
+/**
+ * 修改文章 分类内容
+ * @param {*} param0 {id:文章分类id,cate_name:文章分类名字,cate_alias:文章分类别名}
+ * @returns Promise对象
+ */
+
+export const updateArtCateAPI = ({ id, cate_name, cate_alias }) => {
+  return request({
+    url: '/my/cate/info',
+    method: 'PUT',
+    data: {
+      id, cate_name, cate_alias
     }
   })
 }

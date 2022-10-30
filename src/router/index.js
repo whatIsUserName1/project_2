@@ -1,9 +1,7 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
 import store from '@/store'
-import home from '@/views/home'
-import UserInfo from '@/views/user/userInfo.vue'
-import UserAvatar from '@/views/user/userAvatar.vue'
+
 Vue.use(VueRouter)
 
 const routes = [
@@ -13,15 +11,24 @@ const routes = [
     children: [
       {
         path: 'home',
-        component: home
+        component: () => import('@/views/home/index.vue')
       },
       {
         path: 'user-info',
-        component: UserInfo
+        component: () => import('@/views/user/userInfo.vue')
       },
       {
         path: 'user-avatar',
-        component: UserAvatar
+        component: () => import('@/views/user/userInfo.vue')
+      },
+      {
+        path: 'user-pwd',
+        component: () => import('@/views/user/userPwd.vue')
+      },
+      // 文章列表
+      {
+        path: 'art-cate',
+        component: () => import('@/views/article/article.vue')
       }
     ],
     redirect: '/home'
