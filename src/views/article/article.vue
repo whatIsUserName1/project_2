@@ -15,7 +15,7 @@
           <!-- scope对象: {row:行对象 } v-slot作用域插槽 用来获取插槽信息和绑定插槽里面的数据 -->
           <template v-slot="scope">
             <el-button type="primary" size="mini" @click="updateFn(scope.row)">修改</el-button>
-            <el-button type="danger" size="mini">删除</el-button>
+            <el-button type="danger" size="mini" @click="delCateFn(scope.row)">删除</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -55,7 +55,7 @@
 // 2.在点击修改的时候 isEdit改为true,editId保持要修改的数据id
 // 3.在点击新增按钮的时候 isEdit改为false editId置空
 // 4.在点击保存按钮时(确定按钮时) 可以使用isEdit变量做区分
-import { getArtCateListAPI, saveArtCateAPI, updateArtCateAPI } from '@/api'
+import { getArtCateListAPI, saveArtCateAPI, updateArtCateAPI, delArtCateAPI } from '@/api'
 export default {
   name: 'ArtCate',
   data() {
@@ -146,6 +146,14 @@ export default {
         this.dislogFrom.cate_name = obj.cate_name
         this.dislogFrom.cate_alias = obj.cate_alias
       })
+    },
+    // 删除文章分类内容
+    async delCateFn(obj) {
+      const { data: res } = await delArtCateAPI(obj.id)
+      if (res.code !== 0) return this.$message.error(res.message)
+      this.$message.success(res.message)
+      // 删除后 在调用方法去后台获取最新的数据列表
+      this.getArtCateFN()
     }
   }
 }

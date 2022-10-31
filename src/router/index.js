@@ -25,10 +25,15 @@ const routes = [
         path: 'user-pwd',
         component: () => import('@/views/user/userPwd.vue')
       },
-      // 文章列表
+      // 文章分类
       {
         path: 'art-cate',
         component: () => import('@/views/article/article.vue')
+      },
+      // 文章列表
+      {
+        path: 'art-list',
+        component: () => import('@/views/article/artList.vue')
       }
     ],
     redirect: '/home'
