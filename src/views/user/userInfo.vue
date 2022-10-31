@@ -33,15 +33,15 @@ export default {
       },
       UserInfoRules: {
         nickname: [
-          { required: true, message: '请输入昵称名', tigger: 'blur' },
-          { pattern: /^\S{1,10}$/, message: '昵称必须时1-10位的非空字符串', tigger: 'blur' }
+          { required: true, message: '请输入昵称名', trigger: 'blur' },
+          { pattern: /^\S{1,10}$/, message: '昵称必须时1-10位的非空字符串', trigger: 'blur' }
         ],
         email: [
           {
-            required: true, message: '请输入邮箱号', tigger: 'blur'
+            required: true, message: '请输入邮箱号', trigger: 'blur'
           },
           {
-            type: 'email', message: '邮箱格式不正确', tigger: 'blur'
+            type: 'email', message: '邮箱格式不正确', trigger: 'blur'
           }
         ]
       }

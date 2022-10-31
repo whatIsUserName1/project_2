@@ -49,18 +49,18 @@ export default {
       },
       userPwdRules: {
         old_pwd: [
-          { required: true, message: '请输入旧密码', tigger: 'blur' },
-          { pattern: /^\S{6,15}$/, message: '请输入6-15位数的非空字符串', tigger: 'blur' }
+          { required: true, message: '请输入旧密码', trigger: 'blur' },
+          { pattern: /^\S{6,15}$/, message: '请输入6-15位数的非空字符串', trigger: 'blur' }
         ],
         new_pwd: [
-          { required: true, message: '请输入新密码', tigger: 'blur' },
-          { pattern: /^\S{6,15}$/, message: '请输入6-15位数的非空字符串', tigger: 'blur' },
-          { validator: samePwd, tigger: 'blur' }
+          { required: true, message: '请输入新密码', trigger: 'blur' },
+          { pattern: /^\S{6,15}$/, message: '请输入6-15位数的非空字符串', trigger: 'blur' },
+          { validator: samePwd, trigger: 'blur' }
         ],
         re_pwd: [
-          { required: true, message: '请确认密码', tigger: 'blur' },
-          { pattern: /^\S{6,15}$/, message: '请输入6-15位数的非空字符串', tigger: 'blur' },
-          { validator: rePwd, tigger: 'blur' }
+          { required: true, message: '请确认密码', trigger: 'blur' },
+          { pattern: /^\S{6,15}$/, message: '请输入6-15位数的非空字符串', trigger: 'blur' },
+          { validator: rePwd, trigger: 'blur' }
         ]
       }
     }

@@ -68,12 +68,12 @@ export default {
       },
       dislogRules: {
         cate_name: [
-          { required: true, message: '请输入分类名称', tigger: 'blur' },
-          { pattern: /^\S{1,10}$/, message: '请输入1-10非空字符', tigger: 'blur' }
+          { required: true, message: '请输入分类名称', trigger: 'blur' },
+          { pattern: /^\S{1,10}$/, message: '请输入1-10非空字符', trigger: 'blur' }
         ],
         cate_alias: [
-          { required: true, message: '请输入分类别名', tigger: 'blur' },
-          { pattern: /^[a-zA-Z0-9]{1,15}$/, message: '分类别名必须是1-15位的字母数字', tigger: 'blur' }
+          { required: true, message: '请输入分类别名', trigger: 'blur' },
+          { pattern: /^[a-zA-Z0-9]{1,15}$/, message: '分类别名必须是1-15位的字母数字', trigger: 'blur' }
         ]
       },
       // isEdit用来判断时修改点的还是 新增点的
@@ -128,6 +128,7 @@ export default {
             // 声明周期的方法比如 created 不会挂载到this身上  无法this.created
           }
           this.dialogFormVisible = false
+          this.getArtCateFN()
         } else {
           return false
         }

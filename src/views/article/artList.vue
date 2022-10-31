@@ -12,7 +12,7 @@
         <el-form :inline="true" :model="pubForm">
           <el-form-item label="文章分类">
             <el-select v-model="pubForm.cate_id" placeholder="请选择分类" size="small">
-              <el-option v-for="obj in cateList" :key="obj.id" :label="obj.cate_name" :value="pubForm.cate_id">
+              <el-option v-for="obj in cateList" :key="obj.id" :label="obj.cate_name" :value="obj.cate_id">
               </el-option>
             </el-select>
           </el-form-item>
@@ -32,26 +32,35 @@
       <!-- 发表文章的Dialog对话框 -->
       <el-dialog title="提示" :visible.sync="pubDialogVisible" fullscreen :before-close="handleClose">
         <!-- 发布文章的对话框 -->
-        <el-form :inline="true" :model="pubForm" :rules="pubFormRules">
+        <el-form :inline="true" :model="pubForm" :rules="pubFormRules" ref="pubRef">
           <el-form-item label="文章标题" prop="title">
             <el-input v-model="pubForm.title" placeholder="请输入标题"></el-input>
           </el-form-item>
           <el-form-item label="文章分类" style="margin-left: 15px" prop="cate_id">
             <!-- 循环渲染分类的可选项 因为整个表单要发给后台 所以要去看vue代码里绑定的值需要什么 发现接口文档里要的是分类id -->
-            <el-select v-model="pubForm.state" placeholder="请选择状态" size="small">
-              <el-option v-for="obj in cateList" :key="obj.id" :label="obj.cate_name" :value="pubForm.cate_id">
+            <el-select v-model="pubForm.cate_id" placeholder="请选择状态" size="small">
+              <el-option v-for="obj in cateList" :key="obj.id" :label="obj.cate_name" :value="obj.id">
               </el-option>
             </el-select>
           </el-form-item>
-          <el-form-item>
-            <el-button type="primary" size="small">筛选</el-button>
-            <el-button type="info" size="small">重置</el-button>
+          <!-- 文章内容  -->
+          <el-form-item label="文章内容" prop="content">
+            <quill-editor v-model="pubForm.content">
+            </quill-editor>
+          </el-form-item>
+          <el-form-item label="文章封面" prop="cover_img">
+            <!-- 用来显示封面的图片 -->
+            <img class="cover-img" src="../../assets/images/avatar.jpg" alt="" ref="imgRef" />
+            <br>
+            <!-- 选择封面按钮区域 -->
+            <input type="file" accept="image/*" style="display: none" ref="iptFileRef" @change="changeCoverFn" />
+            <el-button type="text" @click="chooseImgFn">选择图片</el-button>
+          </el-form-item>
+          <el-form-item style="display:block">
+            <el-button type="primary" @click="pubArticleFn('已发布')">发布</el-button>
+            <el-button type="info" @click="pubArticleFn('草稿')">存为草稿</el-button>
           </el-form-item>
         </el-form>
-        <span slot="footer" class="dialog-footer">
-          <el-button @click="pubDialogVisible = false">取 消</el-button>
-          <el-button type="primary" @click="pubDialogVisible = false">确 定</el-button>
-        </span>
       </el-dialog>
     </el-card>
   </div>
@@ -59,17 +68,20 @@
 
 <script>
 import { getArtCateListAPI } from '@/api'
+// 标签和央视中，把图片文件可以写成路径，在js里引入图片要用import引入
+// webpack会把图片变成为一个base64字符串/在打包后的图片临时地址
+import imgObj from '@/assets/images/cover.jpg'
 export default {
   name: 'ArtList',
   data() {
     return {
       // 查询参数对象
-      pubForm: {
-        pagenum: 1,
-        pagesize: 2,
-        cate_id: '',
-        state: '',
-        title: ''
+      pubForm: { // 发布文章 表单的数据对象
+        cate_id: '', // 文章分类id
+        state: '', // 文章状态
+        title: '', // 文章标题
+        content: '', // 文章内容
+        cover_img: ''
       },
       // 弹窗是否打开
       pubDialogVisible: false,
@@ -80,7 +92,17 @@ export default {
           { min: 1, max: 30, message: '文章标题的长度为1-30个字符', trigger: 'blur' }
         ],
         cate_id: [
-          { required: true, message: '请选择文章标题', trigger: 'blur' }
+          { required: true, message: '请选择文章id', trigger: 'change' }
+        ],
+        content: [
+          { required: true, message: '请选择文章内容', trigger: 'blur' }
+        ],
+        state: [
+          { required: true, message: '请选择文章状态', trigger: 'blur' }
+
+        ],
+        cover_img: [
+          { required: true, message: '请选择文章封面', trigger: 'blur' }
         ]
       },
       cateList: []
@@ -111,7 +133,42 @@ export default {
       if (res.code !== 0) return
       this.cateList = res.data
       console.log(this.cateList)
+    },
+    // 上传文件选择
+    chooseImgFn() {
+      this.$refs.iptFileRef.click()
+    },
+    // 封面选择改变的事件
+    changeCoverFn(e) {
+      // 获取用户选择的文件列表
+      // e.target拿到触发事件的那个标签(input标签对象本身)
+      // e.target.files拿到选择的文件数组
+      const files = e.target.files
+      if (files.length === 0) {
+        // 用户没有选择封面
+        this.pubForm.cover_img = null
+        // img要显示回默认的cover.png
+        this.$refs.imgRef.setAttribute('src', imgObj)
+      } else {
+        // 用户选择了封面
+        this.pubForm.cover_img = files[0]
+        // 预览效果
+        const url = URL.createObjectURL(files[0])
+        this.$refs.imgRef.setAttribute('src', url)
+      }
+    },
+    pubArticleFn(str) {
+      this.pubForm.state = str
+      this.$refs.pubRef.validate(async valid => {
+        if (valid) {
+          // 通过校验
+          console.log(this.pubForm.state)
+        } else {
+          // 没有通过
+        }
+      })
     }
+
   },
   created() {
     // 获取数据
