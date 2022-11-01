@@ -155,3 +155,18 @@ export const delArtCateAPI = (id) => {
     }
   })
 }
+
+/**
+ *
+ * @param {*} fd FromData 表单数据对象
+ * @returns  Promise对象
+ */
+export const uploadArticleAPI = (fd) => {
+  return request({
+    url: '/my/article/add',
+    method: 'POST',
+    data: fd
+    // {}如果时一个普通对象 axios会把他转为json字符串再请求体里交给后台
+    // 如果接口文档要求的时一个FromData类型(表单数据对象) 携带文件给后台
+  })
+}

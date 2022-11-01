@@ -30,7 +30,8 @@
 
       </div>
       <!-- 发表文章的Dialog对话框 -->
-      <el-dialog title="提示" :visible.sync="pubDialogVisible" fullscreen :before-close="handleClose">
+      <el-dialog title="提示" :visible.sync="pubDialogVisible" fullscreen :before-close="handleClose"
+        @close="dialogCloseFn">
         <!-- 发布文章的对话框 -->
         <el-form :inline="true" :model="pubForm" :rules="pubFormRules" ref="pubRef">
           <el-form-item label="文章标题" prop="title">
@@ -45,7 +46,7 @@
           </el-form-item>
           <!-- 文章内容  -->
           <el-form-item label="文章内容" prop="content">
-            <quill-editor v-model="pubForm.content" @change="contentChangeFn">
+            <quill-editor v-model="pubForm.content" @blur="contentChangeFn">
             </quill-editor>
           </el-form-item>
           <el-form-item label="文章封面" prop="cover_img">
@@ -67,7 +68,7 @@
 </template>
 
 <script>
-import { getArtCateListAPI } from '@/api'
+import { getArtCateListAPI, uploadArticleAPI } from '@/api'
 // 标签和央视中，把图片文件可以写成路径，在js里引入图片要用import引入
 // webpack会把图片变成为一个base64字符串/在打包后的图片临时地址
 import imgObj from '@/assets/images/cover.jpg'
@@ -81,7 +82,7 @@ export default {
         state: '', // 文章状态
         title: '', // 文章标题
         content: '', // 文章内容
-        cover_img: ''
+        cover_img: '' // 文章图片
       },
       // 弹窗是否打开
       pubDialogVisible: false,
@@ -167,15 +168,29 @@ export default {
       }
       this.$refs.pubRef.validateField('cover_img')
     },
-    // 校验发布文章表单
+    // 校验发布文章表单有存为草稿和发布两个按钮
     pubArticleFn(str) {
       this.pubForm.state = str
       this.$refs.pubRef.validate(async valid => {
         if (valid) {
           // 通过校验
           console.log(this.pubForm.state)
+          const fd = new FormData() // 准备一个表单数据对象的容器 FormData类是HTML5新出的专门为了装文件内容和其他参数的一个容器
+          // fd.append('参数名',值)
+          fd.append('title', this.pubForm.title)
+          fd.append('cate_id', this.pubForm.cate_id)
+          fd.append('content', this.pubForm.content)
+          fd.append('cover_img', this.pubForm.cover_img)
+          fd.append('state', this.pubForm.state)
+          const { data: res } = await uploadArticleAPI(fd)
+          if (res.code !== 0) return this.$message.error(res.message)
+          this.$message.success(res.message)
+          console.log(res)
+          // 让发布页面重置
+          this.$refs.pubRef.resetFields()
         } else {
           // 没有通过
+          return false // 阻止默认行为(因为按钮有默认提交行为)
         }
       })
     },
@@ -183,6 +198,12 @@ export default {
     contentChangeFn() {
       // 目的让 el-form校验 只校验content这个规则
       this.$refs.pubRef.validateField('content')
+    },
+    // 新增文章->对话框关闭时->清空表单
+    dialogCloseFn() {
+      this.$refs.iptFileRef.resetFields()
+      // 让封面重置
+      this.$refs.imgRef.setAttribute('src', imgObj)
     }
   },
   created() {
