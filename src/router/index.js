@@ -19,7 +19,7 @@ const routes = [
       },
       {
         path: 'user-avatar',
-        component: () => import('@/views/user/userInfo.vue')
+        component: () => import('@/views/user/userAvatar.vue')
       },
       {
         path: 'user-pwd',
