@@ -11,24 +11,49 @@
       <div class="search-box">
         <el-form :inline="true" :model="pubForm">
           <el-form-item label="文章分类">
-            <el-select v-model="pubForm.cate_id" placeholder="请选择分类" size="small">
-              <el-option v-for="obj in cateList" :key="obj.id" :label="obj.cate_name" :value="obj.cate_id">
+            <el-select v-model="q.cate_id" placeholder="请选择分类" size="small">
+              <el-option v-for="obj in cateList" :key="obj.id" :label="obj.cate_name" :value="obj.id">
               </el-option>
             </el-select>
           </el-form-item>
           <el-form-item label="发布状态" style="margin-left: 15px">
-            <el-select v-model="pubForm.state" placeholder="请选择状态" size="small">
+            <el-select v-model="q.state" placeholder="请选择状态" size="small">
               <el-option label="已发布" value="已发布"></el-option>
               <el-option label="草稿" value="草稿"></el-option>
             </el-select>
           </el-form-item>
           <el-form-item>
-            <el-button type="primary" size="small">筛选</el-button>
-            <el-button type="info" size="small">重置</el-button>
+            <el-button type="primary" size="small" @click="choseFn">筛选</el-button>
+            <el-button type="info" size="small" @click="resetFn">重置</el-button>
           </el-form-item>
         </el-form>
 
       </div>
+      <!-- 文章的内容区域 -->
+      <el-table style="width: 100%" :data="artList" border stripe>
+        <el-table-column label="文章标题" prop="title">
+          <template v-slot="scope">
+            <el-link type="primary" @click="showDetailFn(scope.row.id)">{{ scope.row.title }}</el-link>
+          </template>
+        </el-table-column>
+        <el-table-column label="分类" prop="cate_name"></el-table-column>
+        <el-table-column label="报表时间" prop="pub_date">
+          <!-- scope对象: {row:行对象 } v-slot作用域插槽 用来获取插槽信息和绑定插槽里面的数据 -->
+          <template v-slot="scope">
+            <span>{{ $formatDate(scope.row.pub_date) }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="状态" prop="state"></el-table-column>
+        <el-table-column label="操作">
+          <!-- scope变量值:{
+            row:行数据对象
+          } -->
+          <template v-slot="{ row: row }">
+            <el-button type="danger" size="mini" @click="removeFn(row.id)">删除</el-button>
+          </template>
+        </el-table-column>
+      </el-table>
+
       <!-- 发表文章的Dialog对话框 -->
       <el-dialog title="提示" :visible.sync="pubDialogVisible" fullscreen :before-close="handleClose"
         @close="dialogCloseFn">
@@ -37,8 +62,8 @@
           <el-form-item label="文章标题" prop="title">
             <el-input v-model="pubForm.title" placeholder="请输入标题"></el-input>
           </el-form-item>
+          <!-- 循环渲染分类的可选项 因为整个表单要发给后台 所以要去看vue代码里绑定的值需要什么 发现接口文档里要的是分类id -->
           <el-form-item label="文章分类" style="margin-left: 15px" prop="cate_id">
-            <!-- 循环渲染分类的可选项 因为整个表单要发给后台 所以要去看vue代码里绑定的值需要什么 发现接口文档里要的是分类id -->
             <el-select v-model="pubForm.cate_id" placeholder="请选择状态" size="small">
               <el-option v-for="obj in cateList" :key="obj.id" :label="obj.cate_name" :value="obj.id">
               </el-option>
@@ -49,33 +74,64 @@
             <quill-editor v-model="pubForm.content" @blur="contentChangeFn">
             </quill-editor>
           </el-form-item>
+          <!-- 用来显示封面的图片 -->
           <el-form-item label="文章封面" prop="cover_img">
-            <!-- 用来显示封面的图片 -->
             <img class="cover-img" src="../../assets/images/avatar.jpg" alt="" ref="imgRef" />
             <br>
             <!-- 选择封面按钮区域 -->
             <input type="file" accept="image/*" style="display: none" ref="iptFileRef" @change="changeCoverFn" />
             <el-button type="text" @click="chooseImgFn">选择图片</el-button>
           </el-form-item>
+          <!-- 发布区域按钮 -->
           <el-form-item style="display:block">
             <el-button type="primary" @click="pubArticleFn('已发布')">发布</el-button>
             <el-button type="info" @click="pubArticleFn('草稿')">存为草稿</el-button>
           </el-form-item>
         </el-form>
       </el-dialog>
+      <!-- 分页区域 -->
+      <el-pagination @size-change="handleSizeChangeFn" @current-change="handleCurrentChangeFn"
+        :current-page.sync="q.pagenum" :page-sizes="[2, 3, 5, 10]" :page-size.sync="q.pagesize"
+        layout="sizes, prev, pager, next, jumper, total" :total="total">
+      </el-pagination>
+      <!-- 查看文章详情的对话框 -->
+      <el-dialog :visible.sync="detailvisible" width="80%">
+        <h1 class="title">{{ artDetail.title }}</h1>
+        <div class="info">
+          <span>作者:{{ artDetail.nickname || artDetail.username }}</span>
+          <span>发布时间:{{ $formatDate(artDetail.pub_date) }}</span>
+          <span>所属分类:{{ artDetail.cate_name }}</span>
+          <span>状态:{{ artDetail.state }}</span>
+        </div>
+        <!-- 分割线 -->
+        <el-divider></el-divider>
+        <!-- 文章的封面 -->
+        <!-- 详情请看main.js最下方注释 -->
+        <img v-if="artDetail.cover_img" :src="baseURLR + artDetail.cover_img" alt="">
+        <!-- 文章的详情 -->
+        <div class="detail-box" v-html="artDetail.content"></div>
+      </el-dialog>
     </el-card>
   </div>
 </template>
 
 <script>
-import { getArtCateListAPI, uploadArticleAPI } from '@/api'
+import { getArtCateListAPI, uploadArticleAPI, getArtListAPI, getArtDetailAPI, delArticleAPI } from '@/api'
 // 标签和央视中，把图片文件可以写成路径，在js里引入图片要用import引入
 // webpack会把图片变成为一个base64字符串/在打包后的图片临时地址
 import imgObj from '@/assets/images/cover.jpg'
+import { baseURL } from '@/utils/request.js'
 export default {
   name: 'ArtList',
   data() {
     return {
+      baseURLR: baseURL,
+      q: { // 查询参数对象
+        pagenum: 1, // 默认拿第一页的数据
+        pagesize: 2, // 默认当前页需要几条数据(传递给后台,后台就返回几个数据)
+        cate_id: '', // 文章id
+        state: '' // 文章状态
+      },
       // 查询参数对象
       pubForm: { // 发布文章 表单的数据对象
         cate_id: '', // 文章分类id
@@ -115,10 +171,28 @@ export default {
           { required: true, message: '请选择文章封面', trigger: 'blur' }
         ]
       },
-      cateList: []
+      cateList: [],
+      artList: [], // 保存文章列表
+      total: 0, // 保存现有文章的总数
+      detailvisible: false, // 打开文章详情 显示/隐藏
+      artDetail: {} // 文章详情
     }
   },
   methods: {
+    // 初始化文章分类的列表数据
+    async initCateList() {
+      const { data: res } = await getArtCateListAPI()
+      if (res.code !== 0) return
+      this.cateList = res.data
+      console.log(this.cateList)
+    },
+    // 初始化文章列表数据
+    async getArtListFN() {
+      const { data: res } = await getArtListAPI(this.q)
+      this.artList = res.data
+      this.total = res.total
+      console.log(res)
+    },
     // 发表文章按钮点击事件 ->让对话框出现
     showPubDialogFn() {
       this.pubDialogVisible = true
@@ -136,13 +210,6 @@ export default {
       if (confirmResult === 'cancel') return
       // 确认关闭
       done()
-    },
-    // 初始化文章分类的列表数据
-    async initCateList() {
-      const { data: res } = await getArtCateListAPI()
-      if (res.code !== 0) return
-      this.cateList = res.data
-      console.log(this.cateList)
     },
     // 上传文件选择
     chooseImgFn() {
@@ -188,6 +255,11 @@ export default {
           console.log(res)
           // 让发布页面重置
           this.$refs.pubRef.resetFields()
+          // 让封面重置
+          this.$refs.imgRef.setAttribute('src', imgObj)
+          this.getArtListFN()
+          // 关闭弹窗
+          this.pubDialogVisible = false
         } else {
           // 没有通过
           return false // 阻止默认行为(因为按钮有默认提交行为)
@@ -202,13 +274,68 @@ export default {
     // 新增文章->对话框关闭时->清空表单
     dialogCloseFn() {
       this.$refs.iptFileRef.resetFields()
-      // 让封面重置
-      this.$refs.imgRef.setAttribute('src', imgObj)
+    },
+    // 核心思想:根据选择的页码/条数,影响q对象对应属性的值,再重新发一次请求让后台重新返回数据
+    // 每页显示的条数发生改变
+    handleSizeChangeFn(sizes) {
+      // sizes:当前需要每页显示的条数
+      // 因为Pagination的标签上已经加了.sync,子组件内会双向绑定到右侧vue变量上(q对象中pagesize已经改变)
+      // 如果不放心可以再写一遍
+      this.q.pagesize = sizes
+
+      // 问题:先点击最后一个页码,切换每页显示条数2->3 总数不够 分页只能到2
+      // 每页条数改变了 页码从3到2改变了 两个事件都会触发
+      // 偶发性的bug:有时候自动回到第二页有数据 有的时候没有
+      // 知识点: 两个网络请求一起发 谁先回来不一定
+      // 原因:可能第2页3条数据回来有值铺设 紧接着第3页的3条数据回来了,空数组所以页面就是空的
+      // 解决： 当切换每页显示的条数 我们就把当前页码设置为1 而且标签里要设置
+      this.q.pagenum = 1
+      this.getArtListFN()
+    },
+    // 页数发生改变
+    handleCurrentChangeFn(nowPage) {
+      // nowPage:当前要看的第几页,页数
+      this.q.pagenum = nowPage
+      this.getArtListFN()
+    },
+    // 筛选按钮->点击事件
+    choseFn() {
+      // 目的:当有了筛选的条件 我想让页码回到1,每页条数到2
+      this.q.pagenum = 1
+      this.q.pagesize = 2
+      this.getArtListFN()
+    },
+    // 重置按钮 ->点击事件
+    resetFn() {
+      this.q.pagenum = 1
+      this.q.pagesize = 2
+      this.q.cate_id = ''
+      this.q.state = '' // 对象改变  v-model关联的表单标签也会变为空
+      this.getArtListFN()
+    },
+    // 文章的点击事件
+    async showDetailFn(id) {
+      this.detailvisible = true
+      const { data: res } = await getArtDetailAPI(id)
+      this.artDetail = res.data
+      console.log(this.artDetail)
+    },
+    // 删除文章点击事件
+    async removeFn(id) {
+      const { data: res } = await delArticleAPI(id)
+      if (res.code !== 0) return this.$message.error(res.message)
+      this.$message.success(res.message)
+      // 直接携带当前q里有的参数，重新去后台获取一次
+      this.getArtListFN()
+      // 或者把分页和筛选条件重置，让表格的数据重新请求一次
+      // this.resetFn()
     }
+
   },
   created() {
     // 获取数据
     this.initCateList()
+    this.getArtListFN()
   }
 }
 

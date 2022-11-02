@@ -117,6 +117,7 @@ export default {
             const { data: res } = await updateArtCateAPI({ id: this.editId, ...this.dislogFrom })
             if (res.code !== 0) return this.$message.error('上传失败')
             this.$message.success('上传成功')
+            console.log(res)
           } else {
             // 要新增
             this.editId = ''

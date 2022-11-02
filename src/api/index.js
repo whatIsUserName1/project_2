@@ -170,3 +170,43 @@ export const uploadArticleAPI = (fd) => {
     // 如果接口文档要求的时一个FromData类型(表单数据对象) 携带文件给后台
   })
 }
+
+/**
+ * 获取文章列表
+ * @param {*} param0 {pagenum：当前页码数, pagesize：当前页条数, cate_id：文章分类id, state：文章状态}
+ * @returns Promise对象
+ */
+export const getArtListAPI = ({ pagenum, pagesize, cate_id, state }) => {
+  return request({
+    url: '/my/article/list',
+    params: {
+      pagenum,
+      pagesize,
+      cate_id,
+      state
+    }
+  })
+}
+/**
+ *  获取文章详情
+ * @param {*} id 文章id
+ * @returns Promise对象
+ */
+export const getArtDetailAPI = (id) => {
+  return request({
+    url: '/my/article/info',
+    params: {
+      id
+    }
+  })
+}
+
+export const delArticleAPI = (id) => {
+  return request({
+    url: '/my/article/info',
+    method: 'DELETE',
+    params: {
+      id
+    }
+  })
+}
