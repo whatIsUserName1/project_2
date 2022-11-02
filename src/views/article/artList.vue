@@ -325,6 +325,16 @@ export default {
       const { data: res } = await delArticleAPI(id)
       if (res.code !== 0) return this.$message.error(res.message)
       this.$message.success(res.message)
+      // 数组里只保存当前页的数据,别的页的需要传参q给后台获取覆盖
+      // 1的原因:虽然你调用删除接口但是那是后端删除,前端数组里你没有代码去修改它
+      if (this.artList.length === 1) {
+        if (this.q.pagenum > 1) { // 不能让页面变成-1
+          this.q.pagenum--
+        }
+      }
+      // 问题:在最后一夜,删除最后一条时,虽然页码能回到上一页,但是数据没有出现
+      // 原因:发现network里参数q.pagenum的值不会自己回到上一页 因为你的代码里没有修改过这个q.pagenum值 用geiArtcleFn方法 带着之前的参数请求去了所以没有数据
+      // 解决: 在调用接口以后,刷新数组列表之前,对页码做一些处理
       // 直接携带当前q里有的参数，重新去后台获取一次
       this.getArtListFN()
       // 或者把分页和筛选条件重置，让表格的数据重新请求一次
