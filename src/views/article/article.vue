@@ -89,9 +89,9 @@ export default {
     // 获取文章分类列表
     async getArtCateFN() {
       const { data: res } = await getArtCateListAPI()
-      console.log(res)
+      // console.log(res)
       this.cateList = res.data
-      console.log(this.cateList)
+      // console.log(this.cateList)
     },
     // 点击添加对话框显示
     addListFN() {
@@ -117,7 +117,7 @@ export default {
             const { data: res } = await updateArtCateAPI({ id: this.editId, ...this.dislogFrom })
             if (res.code !== 0) return this.$message.error('上传失败')
             this.$message.success('上传成功')
-            console.log(res)
+            // console.log(res)
           } else {
             // 要新增
             this.editId = ''

@@ -70,7 +70,10 @@ export default {
       this.$refs.userPwdRef.validate(async valid => {
         if (valid) {
           const { data: res } = await updataPwdAPI(this.userPwd)
-          console.log(res)
+          if (res.code !== 0) return this.$message.error(res.message)
+          this.$message.success(res.message)
+          this.getArtCateFN()
+          // console.log(res)
           // 清空token值
           this.$store.commit('updataToken', '')
           // 清空用户信息

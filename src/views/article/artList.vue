@@ -184,14 +184,14 @@ export default {
       const { data: res } = await getArtCateListAPI()
       if (res.code !== 0) return
       this.cateList = res.data
-      console.log(this.cateList)
+      // console.log(this.cateList)
     },
     // 初始化文章列表数据
     async getArtListFN() {
       const { data: res } = await getArtListAPI(this.q)
       this.artList = res.data
       this.total = res.total
-      console.log(res)
+      // console.log(res)
     },
     // 发表文章按钮点击事件 ->让对话框出现
     showPubDialogFn() {
@@ -241,7 +241,7 @@ export default {
       this.$refs.pubRef.validate(async valid => {
         if (valid) {
           // 通过校验
-          console.log(this.pubForm.state)
+          // console.log(this.pubForm.state)
           const fd = new FormData() // 准备一个表单数据对象的容器 FormData类是HTML5新出的专门为了装文件内容和其他参数的一个容器
           // fd.append('参数名',值)
           fd.append('title', this.pubForm.title)
@@ -252,7 +252,7 @@ export default {
           const { data: res } = await uploadArticleAPI(fd)
           if (res.code !== 0) return this.$message.error(res.message)
           this.$message.success(res.message)
-          console.log(res)
+          // console.log(res)
           // 让发布页面重置
           this.$refs.pubRef.resetFields()
           // 让封面重置
@@ -318,7 +318,7 @@ export default {
       this.detailvisible = true
       const { data: res } = await getArtDetailAPI(id)
       this.artDetail = res.data
-      console.log(this.artDetail)
+      // console.log(this.artDetail)
     },
     // 删除文章点击事件
     async removeFn(id) {

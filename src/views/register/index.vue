@@ -86,7 +86,7 @@ export default {
         if (valid) {
           // 通过校验
           const { data: res } = await getRequest(this.form)
-          console.log(res)
+          // console.log(res)
           // 2.注册失败 提示用户3
           if (res.code !== 0) return this.$message.error(res.message)
           // 3.注册成功提示用户

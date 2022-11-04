@@ -40,7 +40,7 @@ export default {
         // 证明刚才文件选择窗口打开了 但是它一个文件都没有选择然后点击了关闭弹窗
       } else {
         // 证明它选择了文件(默认只有一个,)
-        console.log(files[0])
+        // console.log(files[0])
         // 目标：选择的图片文件，要给img标签上做纯前端的预览
         // img的标签src值
         // 只能是图片的链接地址(外链http//开头的  图片文件的相对路径)
@@ -60,7 +60,7 @@ export default {
     },
     async uploadFn() {
       const { data: res } = await updataUserAvatarAPI(this.avatar)
-      console.log(res)
+      // console.log(res)
       if (res.code !== 0) return this.$message.error(res.message)
       this.$message.success(res.message)
       this.$store.dispatch('getUserInfoActions')

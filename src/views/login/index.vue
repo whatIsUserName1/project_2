@@ -58,7 +58,7 @@ export default {
           if (res.code === 0) {
             this.$message.success(res.message)
             this.$store.commit('updataToken', res.token)
-            console.log(res)
+            // console.log(res)
             this.$router.push('/')
           } else {
             this.$message.error(res.message)

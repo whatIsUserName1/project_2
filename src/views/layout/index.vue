@@ -113,9 +113,9 @@ export default {
     // 获取右侧侧边栏数据
     async getMenysList() {
       const { data: menus } = await getMenysListAPI()
-      console.log(menus)
+      // console.log(menus)
       this.list = menus
-      console.log(this.list)
+      // console.log(this.list)
     }
   },
   computed: {
